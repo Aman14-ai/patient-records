@@ -1,0 +1,190 @@
+/* --- NO NEED TO EDIT THIS FILE --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-bg: #f8f9fa;
+  --panel-bg: #ffffff;
+  --border-color: #dee2e6;
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --accent-color: #007bff;
+  --accent-hover: #0056b3;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--primary-bg);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  height: 80vh;
+  background-color: var(--panel-bg);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.sidebar {
+  width: 300px;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.patient-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto;
+}
+
+.patient-item {
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s;
+}
+
+.patient-item:hover {
+  background-color: #f1f3f5;
+}
+
+.patient-item.active {
+  background-color: var(--accent-color);
+  color: white;
+}
+.patient-item.active .patient-dob {
+  color: #e0e0e0;
+}
+
+
+.patient-name {
+  font-weight: 500;
+}
+
+.patient-dob {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.patient-details h2 {
+  margin-top: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.patient-details p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.visits-section h3 {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.visit-card {
+  background-color: #f8f9fa;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.visit-date {
+  font-weight: 600;
+  color: var(--accent-color);
+}
+
+.visit-info {
+  margin-top: 0.5rem;
+  line-height: 1.6;
+}
+.visit-info strong {
+    color: var(--text-primary);
+}
+
+
+.add-note-form {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.add-note-form h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.add-note-form textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.add-note-form button {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.add-note-form button:hover {
+    background-color: var(--accent-hover);
+}
