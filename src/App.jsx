@@ -3,30 +3,63 @@ import { PATIENTS } from './data/mockPatients.js';
 import './App.css';
 
 function App() {
+
+  const allPatients = PATIENTS;
+  console.log("All patients: " , allPatients);
   // --- STATE MANAGEMENT ---
   // TODO: 1. Create a state variable `patients` initialized with the PATIENTS data from mockPatients.js.
+  const [patients , setPatients] = useState(PATIENTS);
   // TODO: 2. Create a state variable `selectedPatientId` initialized to null. This will track which patient is selected.
+  const [selectedPatientId , setSelectedPatientId] = useState(null);
 
 
   // --- DERIVED STATE ---
   // Find the full patient object based on the selectedPatientId.
-  const selectedPatient = null; // TODO: 3. Replace `null` with logic to find the selected patient from the `patients` array using `selectedPatientId`.
+  let selectedPatient = null;
+  if(selectedPatientId)
+  {
+    selectedPatient = allPatients.filter((patient) => patient.id == selectedPatientId);
+  }
+  console.log("Selected patient ", selectedPatient)
+  
+  
 
 
   //--- EVENT HANDLERS ---
   const handleSelectPatient = (patientId) => {
-    // TODO: 4. Set the `selectedPatientId` state to the `patientId` passed to this function.
+    if(patientId)
+      setSelectedPatientId(patientId)
   };
 
   const handleAddNote = (noteText) => {
     // This is the most complex part.
     // TODO: 6. Logic to add a new note to the selected patient.
     // 1. Check if a patient is selected and the noteText is not empty.
+    if(!noteText || !selectedPatient) 
+    {
+      console.log("not patiend and notetext from handleAddNote");
+      return;
+    }
     // 2. Create a new visit object with the current date and the noteText.
+    const newVisit = {
+      date: new Date(),
+      notes: noteText,
+      diagnosis:"",
+    }
     // 3. Find the patient to update in the `patients` array.
+    allPatients.map((patient) => {
+      if(patient.id == selectedPatientId)
+      {
+        patient.visits.push(newVisit);
+        return;
+      }
+    })
     // 4. Create a new `visits` array for that patient, including the new visit.
     // 5. Create a new `patients` array, with the updated patient object.
+     setPatients(selectedPatient)
+     console.log("new patients " , selectedPatient)
     // 6. Update the `patients` state with this new array.
+    
     console.log("Adding note:", noteText); // Placeholder
   };
 
@@ -38,12 +71,19 @@ function App() {
           <h1>Patients</h1>
         </header>
         <ul className="patient-list">
-          {/* TODO: 5. Map over the `patients` state array. For each patient, render a list item.
-              - The list item should have a `key` of `patient.id`.
-              - It should have an `onClick` that calls `handleSelectPatient` with the patient's ID.
-              - Add a conditional `className`: 'patient-item ' + (patient.id === selectedPatientId ? 'active' : '')
-              - Inside the list item, display the patient's name and date of birth.
-          */}
+          
+          {
+            patients.map((patient) => {
+              return (
+                <li onClick={() => handleSelectPatient(patient.id)} className={`patient-item ${patient.id == selectedPatientId ? "active" :""}`} key={patient.id}>
+                  <span>{patient.name}</span>
+                  <br />
+                  <span>{patient.dob}</span>
+                  <br />
+                </li>
+              )
+            })
+          }
         </ul>
       </aside>
 
@@ -64,6 +104,7 @@ function App() {
 // Note: For this exercise, child components are in the same file for simplicity.
 
 const PatientDetails = ({ patient, onAddNote }) => {
+  console.log("patient details" , patient[0])
   return (
     <div className="patient-details">
       <h2>{patient.name}</h2>
@@ -71,7 +112,7 @@ const PatientDetails = ({ patient, onAddNote }) => {
 
       <section className="visits-section">
         <h3>Visit History</h3>
-        {patient.visits.map((visit, index) => (
+        {patient[0].visits.map((visit, index) => (
           <div key={index} className="visit-card">
             <p className="visit-date">Date: {visit.date}</p>
             <div className="visit-info">
@@ -95,6 +136,7 @@ const AddNoteForm = ({ onAddNote }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!noteText.trim()) return;
+    console.log('handling submit with note : ' , noteText)
     onAddNote(noteText);
     setNoteText(''); // Clear textarea after submitting
   };
