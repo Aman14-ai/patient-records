@@ -1,68 +1,55 @@
-import { useState } from 'react';
-import { PATIENTS } from './data/mockPatients.js';
-import './App.css';
+import { useEffect, useState } from "react";
+import { PATIENTS } from "./data/mockPatients.js";
+import "./App.css";
 
 function App() {
-
   const allPatients = PATIENTS;
-  console.log("All patients: " , allPatients);
-  // --- STATE MANAGEMENT ---
-  // TODO: 1. Create a state variable `patients` initialized with the PATIENTS data from mockPatients.js.
-  const [patients , setPatients] = useState(PATIENTS);
-  // TODO: 2. Create a state variable `selectedPatientId` initialized to null. This will track which patient is selected.
-  const [selectedPatientId , setSelectedPatientId] = useState(null);
-
+  console.log("All patients: ", allPatients);
+  const [patients, setPatients] = useState(PATIENTS);
+  const [note , setNote] = useState("");
+  const [selectedPatientId, setSelectedPatientId] = useState(null);
 
   // --- DERIVED STATE ---
   // Find the full patient object based on the selectedPatientId.
-  let selectedPatient = null;
-  if(selectedPatientId)
-  {
-    selectedPatient = allPatients.filter((patient) => patient.id == selectedPatientId);
-  }
-  console.log("Selected patient ", selectedPatient)
-  
-  
+  let [selectedPatient, setSelectedPatient] = useState(null);
 
+  useEffect(() => {
+    if (selectedPatientId) {
+      console.log("setting selected patient")
+      setSelectedPatient(
+        allPatients.filter((patient) => patient.id === selectedPatientId)
+      );
+    }
+  }, [selectedPatientId , allPatients , note , setNote]);
+  console.log("Selected patient ", selectedPatient);
 
-  //--- EVENT HANDLERS ---
   const handleSelectPatient = (patientId) => {
-    if(patientId)
-      setSelectedPatientId(patientId)
+    if (patientId) setSelectedPatientId(patientId);
   };
 
+  console.log("patients useState: ", patients);
+
   const handleAddNote = (noteText) => {
-    // This is the most complex part.
-    // TODO: 6. Logic to add a new note to the selected patient.
-    // 1. Check if a patient is selected and the noteText is not empty.
-    if(!noteText || !selectedPatient) 
-    {
+    if (!noteText || !selectedPatient) {
       console.log("not patiend and notetext from handleAddNote");
       return;
     }
-    // 2. Create a new visit object with the current date and the noteText.
+    const today = new Date();
     const newVisit = {
-      date: new Date(),
+      date: today.toLocaleDateString(),
       notes: noteText,
-      diagnosis:"",
-    }
-    // 3. Find the patient to update in the `patients` array.
-    allPatients.map((patient) => {
-      if(patient.id == selectedPatientId)
-      {
-        patient.visits.push(newVisit);
-        return;
-      }
-    })
-    // 4. Create a new `visits` array for that patient, including the new visit.
-    // 5. Create a new `patients` array, with the updated patient object.
-     setPatients(selectedPatient)
-     console.log("new patients " , selectedPatient)
-    // 6. Update the `patients` state with this new array.
-    
-    console.log("Adding note:", noteText); // Placeholder
-  };
+      diagnosis: "test",
+    };
 
+    for (let i = 0; i < allPatients.length; i++) {
+      if (PATIENTS[i].id == selectedPatientId) {
+        PATIENTS[i].visits.push(newVisit);
+      }
+    }
+    console.log("all patients: ", allPatients);
+
+    console.log("selected patients ", selectedPatient);
+  };
 
   return (
     <div className="app-container">
@@ -71,25 +58,28 @@ function App() {
           <h1>Patients</h1>
         </header>
         <ul className="patient-list">
-          
-          {
-            patients.map((patient) => {
-              return (
-                <li onClick={() => handleSelectPatient(patient.id)} className={`patient-item ${patient.id == selectedPatientId ? "active" :""}`} key={patient.id}>
-                  <span>{patient.name}</span>
-                  <br />
-                  <span>{patient.dob}</span>
-                  <br />
-                </li>
-              )
-            })
-          }
+          {patients.map((patient) => {
+            return (
+              <li
+                onClick={() => handleSelectPatient(patient.id)}
+                className={`patient-item ${
+                  patient.id == selectedPatientId ? "active" : ""
+                }`}
+                key={patient.id}
+              >
+                <span>{patient.name}</span>
+                <br />
+                <span>{patient.dob}</span>
+                <br />
+              </li>
+            );
+          })}
         </ul>
       </aside>
 
       <main className="main-content">
         {selectedPatient ? (
-          <PatientDetails patient={selectedPatient} onAddNote={handleAddNote} />
+          <PatientDetails note={note} setNote={setNote} patient={selectedPatient} onAddNote={handleAddNote} />
         ) : (
           <div className="placeholder">
             <p>Select a patient to view their details</p>
@@ -100,11 +90,12 @@ function App() {
   );
 }
 
-// --- CHILD COMPONENTS ---
-// Note: For this exercise, child components are in the same file for simplicity.
+const PatientDetails = ({note , setNote, patient, onAddNote }) => {
+  console.log(
+    "patient visit details after adding note radhe radhe: ",
+    patient[0].visits
+  );
 
-const PatientDetails = ({ patient, onAddNote }) => {
-  console.log("patient details" , patient[0])
   return (
     <div className="patient-details">
       <h2>{patient.name}</h2>
@@ -116,29 +107,32 @@ const PatientDetails = ({ patient, onAddNote }) => {
           <div key={index} className="visit-card">
             <p className="visit-date">Date: {visit.date}</p>
             <div className="visit-info">
-              <p><strong>Notes:</strong> {visit.notes}</p>
-              <p><strong>Diagnosis:</strong> {visit.diagnosis}</p>
+              <p>
+                <strong>Notes:</strong> {visit.notes}
+              </p>
+              <p>
+                <strong>Diagnosis:</strong> {visit.diagnosis}
+              </p>
             </div>
           </div>
         ))}
       </section>
-      
-      <AddNoteForm onAddNote={onAddNote} />
+
+      <AddNoteForm note={note} setNote={setNote} onAddNote={onAddNote} />
     </div>
   );
 };
 
-
-const AddNoteForm = ({ onAddNote }) => {
-  // TODO: 7. Create a state for the textarea's value.
-  const [noteText, setNoteText] = useState('');
+const AddNoteForm = ({note , setNote, onAddNote }) => {
+  const [noteText, setNoteText] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!noteText.trim()) return;
-    console.log('handling submit with note : ' , noteText)
+    setNote(noteText)
+    console.log("handling submit with note : ", noteText);
     onAddNote(noteText);
-    setNoteText(''); // Clear textarea after submitting
+    setNoteText("");
   };
 
   return (
@@ -146,13 +140,12 @@ const AddNoteForm = ({ onAddNote }) => {
       <h4>Add New Visit Note</h4>
       <textarea
         value={noteText}
-        onChange={(e) => setNoteText(e.target.value)} // TODO: 8. Wire up this onChange handler.
+        onChange={(e) => setNoteText(e.target.value)}
         placeholder="Enter doctor's notes..."
       />
       <button type="submit">Add Note</button>
     </form>
   );
-}
-
+};
 
 export default App;
